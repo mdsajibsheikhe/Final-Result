@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>🎓 Final List Lookup | Merit & Waiting (100 Candidates)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0b0f1c 0%, #1a1f33 50%, #0d1225 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            animation: floatOrb 12s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #ff4d6d;
+            top: -100px;
+            left: -100px;
+            animation-duration: 14s;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: #4cc9f0;
+            bottom: -100px;
+            right: -80px;
+            animation-duration: 16s;
+            animation-delay: 2s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: #f9c74f;
+            top: 40%;
+            left: 60%;
+            animation-duration: 18s;
+            animation-delay: 4s;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 70px) scale(1.15); }
+        }
+
+        .main-card {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 550px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 40px;
+            padding: 30px 25px 35px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .header-glow {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #f9d423, #ff4d6d, #4cc9f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 15px rgba(255, 77, 109, 0.5));
+            animation: titlePulse 2.5s infinite alternate;
+            margin-bottom: 8px;
+        }
+
+        @keyframes titlePulse {
+            0% { text-shadow: 0 0 10px #ff4d6d; }
+            100% { text-shadow: 0 0 25px #4cc9f0, 0 0 45px #f9c74f; }
+        }
+
+        .sub {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.35);
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            margin: 25px 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-field {
+            width: 100%;
+            max-width: 350px;
+            background: rgba(20, 25, 45, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 30px;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            color: white;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+        }
+
+        .input-field:focus {
+            border-color: #f9c74f;
+            box-shadow: 0 0 25px rgba(249, 199, 79, 0.5);
+            background: rgba(30, 35, 60, 0.8);
+        }
+
+        .result-popup {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 25px 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(255, 255, 255, 0.05);
+            animation: fadeSlide 0.5s ease-out;
+            display: none;
+            text-align: center;
+        }
+
+        .result-popup.show {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .student-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffd166, #ff4d6d, #06d6a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            word-break: break-word;
+            animation: glowText 2s infinite alternate;
+        }
+
+        @keyframes glowText {
+            from { filter: drop-shadow(0 0 8px #ff4d6d); }
+            to { filter: drop-shadow(0 0 18px #4cc9f0); }
+        }
+
+        .info-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .info-label {
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .status-merit {
+            background: linear-gradient(135deg, #06d6a0, #118ab2);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .status-waiting {
+            background: linear-gradient(135deg, #f9c74f, #f9844a);
+            color: #0b0f1c;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            color: #ff8c94;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .linkedin-note {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 20px;
+        }
+
+        .linkedin-link {
+            color: #4cc9f0;
+            font-weight: 700;
+            text-decoration: none;
+            background: rgba(76, 201, 240, 0.15);
+            padding: 5px 18px;
+            border-radius: 30px;
+            transition: 0.3s;
+            display: inline-block;
+            margin: 8px 0;
+        }
+
+        .linkedin-link:hover {
+            background: #4cc9f0;
+            color: #0b0f1c;
+            box-shadow: 0 0 25px #4cc9f0;
+        }
+
+        @media (max-width: 500px) {
+            .title { font-size: 1.8rem; }
+            .student-name { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="main-card">
+    <div class="header-glow">
+        <h1 class="title">✨ Final List Lookup ✨</h1>
+        <div class="sub">Merit & Waiting Candidates (100)</div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="rollInput" class="input-field" placeholder="🔢 Enter Roll Number (e.g., 75600296)" autofocus>
+    </div>
+
+    <div id="resultPopup" class="result-popup">
+        <div class="student-name" id="studentNameDisplay">—</div>
+        <div class="info-row">
+            <div class="info-item">
+                <span class="info-label">📞 Phone</span>
+                <span class="info-value" id="phoneDisplay">—</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">🏷️ Status</span>
+                <span id="statusDisplay"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="errorMessage" class="error-message"></div>
+
+    <div class="linkedin-note">
+        <p>📌 For more information or assistance</p>
+        <a href="https://www.linkedin.com/in/your-profile" target="_blank" class="linkedin-link">
+            🔗 Contact on LinkedIn
+        </a>
+        <p style="font-size:0.8rem; margin-top:8px;">Demo Project • Fully Animated</p>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ========================
+        // COMPLETE OFFICIAL DATA : 75 MERIT + 25 WAITING
+        // ========================
+        const candidates = [
+            // ---------- MERIT LIST (75) ----------
+            { roll: "75600296", name: "Akash Roy Pranta", phone: "1714366621", status: "Merit" },
+            { roll: "75600336", name: "Somia", phone: "1343448974", status: "Merit" },
+            { roll: "75600569", name: "Faisal Mahmud", phone: "1811307533", status: "Merit" },
+            { roll: "75600443", name: "SHAKIL HASAN", phone: "1625531212", status: "Merit" },
+            { roll: "75600456", name: "NADIYA SULTANA", phone: "1325160425", status: "Merit" },
+            { roll: "75600159", name: "MD. ANISUR RAHMAN", phone: "1560008707", status: "Merit" },
+            { roll: "75600341", name: "Faysal Alam", phone: "1576553548", status: "Merit" },
+            { roll: "75600352", name: "Amena Akter", phone: "1636586460", status: "Merit" },
+            { roll: "75600374", name: "Abdullah Al Afif", phone: "1690090399", status: "Merit" },
+            { roll: "75600398", name: "Nusrat Jahan", phone: "1608288703", status: "Merit" },
+            { roll: "75600485", name: "Ashraful Alam Chowdhury", phone: "1633377999", status: "Merit" },
+            { roll: "75600533", name: "Salma Akter", phone: "1603454540", status: "Merit" },
+            { roll: "75600418", name: "Hasimul Alam Safwan", phone: "1606594054", status: "Merit" },
+            { roll: "75600139", name: "Naymul Islam", phone: "1869236241", status: "Merit" },
+            { roll: "75600413", name: "TARANNUM KHAN", phone: "1805212287", status: "Merit" },
+            { roll: "75600142", name: "Mohammed Yeasin", phone: "1968152601", status: "Merit" },
+            { roll: "75600337", name: "Md. Iftekhar Jahan", phone: "1340928529", status: "Merit" },
+            { roll: "75600396", name: "MD. GOLAM ROBBANI RIYAD", phone: "1538392115", status: "Merit" },
+            { roll: "75600345", name: "Sayima Akter", phone: "1870407879", status: "Merit" },
+            { roll: "75600124", name: "Awolad Hossain Siam", phone: "1646517468", status: "Merit" },
+            { roll: "75600452", name: "Urmy", phone: "1973891675", status: "Merit" },
+            { roll: "75600314", name: "Sharmin Akter", phone: "1324592144", status: "Merit" },
+            { roll: "75600489", name: "Asibul Islam Tamim", phone: "1829577204", status: "Merit" },
+            { roll: "75600031", name: "SUHANA TABASSUM", phone: "1625771312", status: "Merit" },
+            { roll: "75600327", name: "MD.Saidul Islam Mridha", phone: "1814270498", status: "Merit" },
+            { roll: "75600422", name: "Sohel Rana", phone: "1331021841", status: "Merit" },
+            { roll: "75600506", name: "Nahid Hasan Siam", phone: "1617723447", status: "Merit" },
+            { roll: "75600292", name: "MIS SABIHA ZANNAT MAHI", phone: "1799260255", status: "Merit" },
+            { roll: "75600293", name: "ISRAT JAHAN BHUIYAN RIYA", phone: "1925514059", status: "Merit" },
+            { roll: "75600342", name: "Md. Rakib Hossain", phone: "1890517648", status: "Merit" },
+            { roll: "75600484", name: "Rupali Akter", phone: "1575807083", status: "Merit" },
+            { roll: "75600562", name: "Fatema Akter", phone: "1347055290", status: "Merit" },
+            { roll: "75600360", name: "Md Arif Haider Bhuiyan", phone: "1967892078", status: "Merit" },
+            { roll: "75600283", name: "Ayesa Akter", phone: "1602003526", status: "Merit" },
+            { roll: "75600157", name: "Md. Kamrul Hasan", phone: "1876441492", status: "Merit" },
+            { roll: "75600559", name: "Maria Sultana Monni", phone: "1890719130", status: "Merit" },
+            { roll: "75600566", name: "Mohammad shadat Hossain", phone: "1812778735", status: "Merit" },
+            { roll: "75600399", name: "ASMA FAHIM BENU", phone: "1317671462", status: "Merit" },
+            { roll: "75600509", name: "Jinnat Uddin Jishan", phone: "1888274206", status: "Merit" },
+            { roll: "75600359", name: "Rojina Akter Mim", phone: "1703359580", status: "Merit" },
+            { roll: "75600455", name: "Mst. Mohsena Akter", phone: "1518943888", status: "Merit" },
+            { roll: "75600280", name: "Md.Nayem uddin tanim", phone: "1601180079", status: "Merit" },
+            { roll: "75600323", name: "Al amin", phone: "1902628986", status: "Merit" },
+            { roll: "75600564", name: "khadeza akter nasrin", phone: "1860109830", status: "Merit" },
+            { roll: "75600237", name: "Md Sohorab Ullah Sourav", phone: "1609057372", status: "Merit" },
+            { roll: "75600490", name: "Md Arifur Rahaman", phone: "1886100135", status: "Merit" },
+            { roll: "75600073", name: "Habiba Akter Noha", phone: "1316735715", status: "Merit" },
+            { roll: "75600429", name: "SULTANA AKTER", phone: "1901329992", status: "Merit" },
+            { roll: "75600483", name: "Md. Golam Rabbi", phone: "1829775984", status: "Merit" },
+            { roll: "75600530", name: "OMAR FARUK RAJU", phone: "1813864070", status: "Merit" },
+            { roll: "75600339", name: "Aysha Siddika Mysha", phone: "1921454911", status: "Merit" },
+            { roll: "75600501", name: "HABIBA AKTER", phone: "1606690081", status: "Merit" },
+            { roll: "75600041", name: "Md.Reazul Islam Rijon", phone: "1841515824", status: "Merit" },
+            { roll: "75600066", name: "Umme Kulsum", phone: "1521719716", status: "Merit" },
+            { roll: "75600131", name: "TAHOSIN KASHEM RIMEL", phone: "1888338657", status: "Merit" },
+            { roll: "75600230", name: "Hafsa Jannat", phone: "1897924025", status: "Merit" },
+            { roll: "75600470", name: "Tania Akter", phone: "1821929471", status: "Merit" },
+            { roll: "75600548", name: "FARJANA AKTER MUNNI", phone: "1882192709", status: "Merit" },
+            { roll: "75600150", name: "Mehedi Hasan Nasif", phone: "1880906723", status: "Merit" },
+            { roll: "75600410", name: "Mahedi Siyam", phone: "1758022996", status: "Merit" },
+            { roll: "75600532", name: "MD FARHAN ALAM JISHAN", phone: "1815150380", status: "Merit" },
+            { roll: "75600108", name: "SAIDUL AHAD", phone: "1864407886", status: "Merit" },
+            { roll: "75600234", name: "Sumaiya Akter", phone: "1876157255", status: "Merit" },
+            { roll: "75600264", name: "Ankon Saha", phone: "1872704511", status: "Merit" },
+            { roll: "75600060", name: "Iren sultana", phone: "1815759904", status: "Merit" },
+            { roll: "75600266", name: "Shahrin Shaira Oishe", phone: "1822195593", status: "Merit" },
+            { roll: "75600239", name: "Shaon", phone: "1887641660", status: "Merit" },
+            { roll: "75600173", name: "arafat rahman", phone: "1762239333", status: "Merit" },
+            { roll: "75600274", name: "MD RIFAT HOSSAIN", phone: "1902358890", status: "Merit" },
+            { roll: "75600168", name: "Abdul Mukit", phone: "1646533339", status: "Merit" },
+            { roll: "75600325", name: "Md.Atikur Rahman", phone: "1703929978", status: "Merit" },
+            { roll: "75600008", name: "MD ABDULLAH", phone: "1621539402", status: "Merit" },
+            { roll: "75600039", name: "AHKI MONY", phone: "1874358888", status: "Merit" },
+            { roll: "75600377", name: "Ritu Rani Das", phone: "1979427502", status: "Merit" },
+            { roll: "75600170", name: "MD IMTIAJ ALAM", phone: "1400175353", status: "Merit" },
+
+            // ---------- WAITING LIST (25) ----------
+            { roll: "75600479", name: "Aysha Ibnat", phone: "1891462107", status: "Waiting" },
+            { roll: "75600310", name: "Kamrun Nahar", phone: "1725410256", status: "Waiting" },
+            { roll: "75600512", name: "Md. Arifur Rahman Babu", phone: "1554873490", status: "Waiting" },
+            { roll: "75600447", name: "MST: Sharmin Akter", phone: "1627015734", status: "Waiting" },
+            { roll: "75600364", name: "PARHANA AKTER", phone: "1755064927", status: "Waiting" },
+            { roll: "75600279", name: "Mostafizur Rahman", phone: "1305286551", status: "Waiting" },
+            { roll: "75600120", name: "Shanjida Akter Liza", phone: "1636570599", status: "Waiting" },
+            { roll: "75600448", name: "Hanufa Akter", phone: "1893838508", status: "Waiting" },
+            { roll: "75600273", name: "RIZON", phone: "1643005426", status: "Waiting" },
+            { roll: "75600419", name: "ISRAT JAHAN MILI", phone: "1917240961", status: "Waiting" },
+            { roll: "75600043", name: "Tamanna", phone: "1964420156", status: "Waiting" },
+            { roll: "75600110", name: "Saimun Hasan", phone: "1781043401", status: "Waiting" },
+            { roll: "75600508", name: "Arfan Hossain Rafsan", phone: "1876316771", status: "Waiting" },
+            { roll: "75600378", name: "Arpita Rani Shill", phone: "1872893586", status: "Waiting" },
+            { roll: "75600412", name: "Most. Shamsun Nahar", phone: "1866131891", status: "Waiting" },
+            { roll: "75600085", name: "Mansura Akter", phone: "1850590711", status: "Waiting" },
+            { roll: "75600287", name: "SHOURAV CHANDRA BARMON", phone: "1645962411", status: "Waiting" },
+            { roll: "75600192", name: "Afsana Nur Nowrin", phone: "1568830600", status: "Waiting" },
+            { roll: "75600087", name: "Sahinur Akter", phone: "1858026771", status: "Waiting" },
+            { roll: "75600492", name: "Tamanna Akter", phone: "1946119671", status: "Waiting" },
+            { roll: "75600147", name: "Forhad Hossain", phone: "1760167689", status: "Waiting" },
+            { roll: "75600389", name: "Ratri Rani Das", phone: "1817634164", status: "Waiting" },
+            { roll: "75600465", name: "JAHIDUL ISLAM JIHAD", phone: "1777803934", status: "Waiting" },
+            { roll: "75600463", name: "Md Shakib Hossen Bhuiyan", phone: "1746058503", status: "Waiting" },
+            { roll: "75600089", name: "Mishu Das", phone: "1331320900", status: "Waiting" }
+        ];
+
+        const rollInput = document.getElementById('rollInput');
+        const resultPopup = document.getElementById('resultPopup');
+        const studentNameDisplay = document.getElementById('studentNameDisplay');
+        const phoneDisplay = document.getElementById('phoneDisplay');
+        const statusDisplay = document.getElementById('statusDisplay');
+        const errorDiv = document.getElementById('errorMessage');
+
+        function showCandidate(c) {
+            studentNameDisplay.textContent = c.name;
+            phoneDisplay.textContent = c.phone;
+            statusDisplay.className = '';
+            if (c.status === 'Merit') {
+                statusDisplay.classList.add('status-merit');
+            } else {
+                statusDisplay.classList.add('status-waiting');
+            }
+            statusDisplay.textContent = c.status;
+            resultPopup.classList.add('show');
+            resultPopup.style.animation = 'none';
+            resultPopup.offsetHeight;
+            resultPopup.style.animation = 'fadeSlide 0.5s ease-out';
+            errorDiv.textContent = '';
+        }
+
+        function hideResult() {
+            resultPopup.classList.remove('show');
+        }
+
+        function lookup() {
+            const roll = rollInput.value.trim();
+            if (!roll) {
+                hideResult();
+                errorDiv.textContent = '⚠️ Please enter a roll number.';
+                return;
+            }
+            const found = candidates.find(c => c.roll === roll);
+            if (found) {
+                showCandidate(found);
+            } else {
+                hideResult();
+                errorDiv.textContent = '❌ No candidate found with that roll number.';
+            }
+        }
+
+        rollInput.addEventListener('input', lookup);
+        rollInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') lookup();
+        });
+
+        document.querySelector('.linkedin-link').href = "https://www.linkedin.com/in/your-linkedin-profile";
+
+        window.addEventListener('load', () => {
+            rollInput.value = '75600479';  // pre-fill with the corrected waiting entry
+            lookup();
+        });
+    })();
+</script>
+</body>
+</html>
